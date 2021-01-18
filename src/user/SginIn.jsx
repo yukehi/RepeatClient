@@ -1,34 +1,27 @@
 import React, { useState } from 'react';
-
-const SginUp = () => {
+import { Redirect } from 'react-router-dom';
+import Loading from '../core/Loading'
+const SginIn =() => {
     const [profile,setProfile] = useState({
-        name: '',
         email:'',
         password:'',
         error:'',
-        open:false
+        open:false,
+        redirectToReferer:false,
+        loding:false
     })
     const handleChange = (event) => {
         const {value,name } = event.target;
         //debug thers is an bug wehn trying to clear the error the prevValue disapeer
         setProfile(prevValue =>{
-            if(name === 'name'){
+            if(name === 'email'){
                 return {
-                    name:value,
-                    email:prevValue.email,
-                    password:prevValue.password,
-                    error:''
-                }
-            }else if(name === 'email'){
-                return {
-                    name:prevValue.name,
                     email:value,
                     password:prevValue.password,
                     error:''
                 }
             }else if(name === 'password'){
                 return {
-                    name:prevValue.name,
                     email:prevValue.email,
                     password:value,
                     error:''
@@ -37,15 +30,24 @@ const SginUp = () => {
         }
     })
 }
+
+    const authenticate = (jwt,next) => {
+        if(typeof window !== 'undefined'){
+            localStorage.setItem('jwt', JSON.stringify(jwt))
+            next()
+        }
+    }
+
     const clickSubmit = (e) =>{
         e.preventDefault()
+        setProfile({loading:true})
         const {name, email,password} = profile
         const user = {
             name,
             email,
             password,
         };
-        fetch(`${process.env.REACT_APP_API_URL}/signup`, {
+        fetch(`${process.env.REACT_APP_API_URL}/signin`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -59,27 +61,31 @@ const SginUp = () => {
         .catch(err => console.log(err))
         .then((data) => {
             if (data.error){
-                setProfile({ error: data.error})
+                setProfile({ error: data.error ,loading:false})
             }else{
-                setProfile({name:'',email:'',password:'',error:'',open:true})
+                authenticate(data, ()=>{
+                    setProfile({redirectToReferer: true})
+                }) 
             } 
-            //need to move an error if data is with error
-            
             }
         )
-        
     }
+
     
 
-    return (<div className="container">
-        <h2 className="mt-5 mb-5">Sgin up</h2>
-        <h2 className="mt-5 mb-5">Hello {profile.name}</h2>
-        <div className="alert alert-primary" style={{display: profile.error ? '' : 'none'}}>{profile.error}</div>
-        <div className="alert alert-info" style={{display: profile.open ? '' : 'none'}}>New account successfully created. please log in</div>
+    if(profile.redirectToReferer){
+        return <Redirect to='/'/>
+    }
+
+
+    return(
+        <div className='container'>
+            <h2>Sign In</h2>
+            <div className="alert alert-primary" style={{display: profile.error ? '' : 'none'}}>{profile.error}</div>
+        <div className="alert alert-info" style={{display: profile.open ? '' : 'none'}}>Sign In successfully</div>
+        {profile.loading ? <div className=''><Loading/></div>:''}
         <form>
             <div className="from-group">
-                <label className="text-muted">Name</label>
-                <input name="name" type="text" value={profile.name} onChange={handleChange} type="text" className="form-control"/>
                 <label  className="text-muted">Email</label>
                 <input name="email" type="email" value={profile.email} onChange={handleChange} type="email" className="form-control"/>
                 <label className="text-muted">password</label>
@@ -87,10 +93,9 @@ const SginUp = () => {
             </div>
             <button onClick={clickSubmit} type="submit" className="btn btn-raised btn-primary">submit</button>
         </form>
-    </div>)
-
-
+        </div>
+    )
 }
 
 
-export default SginUp;
+export default SginIn;
