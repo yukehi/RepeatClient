@@ -1,4 +1,11 @@
-.center{
+.card-margin{
+    margin: 2% ;
+    padding: 5%;
+    border-radius: 150px;
     display: flex;
     justify-content: center;
+}
+
+.emotion-card{
+    font-size: 1.3rem;
 }

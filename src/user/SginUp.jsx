@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { Link } from 'react-router-dom';
 const SginUp = () => {
     const [profile,setProfile] = useState({
         name: '',
@@ -12,29 +12,10 @@ const SginUp = () => {
         const {value,name } = event.target;
         //debug thers is an bug wehn trying to clear the error the prevValue disapeer
         setProfile(prevValue =>{
-            if(name === 'name'){
-                return {
-                    name:value,
-                    email:prevValue.email,
-                    password:prevValue.password,
-                    error:''
-                }
-            }else if(name === 'email'){
-                return {
-                    name:prevValue.name,
-                    email:value,
-                    password:prevValue.password,
-                    error:''
-                }
-            }else if(name === 'password'){
-                return {
-                    name:prevValue.name,
-                    email:prevValue.email,
-                    password:value,
-                    error:''
-
-                }
-        }
+            return {
+                ...prevValue,
+                [name]: value
+            }
     })
 }
     const clickSubmit = (e) =>{
@@ -63,11 +44,8 @@ const SginUp = () => {
             }else{
                 setProfile({name:'',email:'',password:'',error:'',open:true})
             } 
-            //need to move an error if data is with error
-            
             }
         )
-        
     }
     
 
@@ -75,15 +53,15 @@ const SginUp = () => {
         <h2 className="mt-5 mb-5">Sgin up</h2>
         <h2 className="mt-5 mb-5">Hello {profile.name}</h2>
         <div className="alert alert-primary" style={{display: profile.error ? '' : 'none'}}>{profile.error}</div>
-        <div className="alert alert-info" style={{display: profile.open ? '' : 'none'}}>New account successfully created. please log in</div>
+        <div className="alert alert-info" style={{display: profile.open ? '' : 'none'}}>New account successfully created. please <Link to='/signin'>Sign In</Link></div>
         <form>
             <div className="from-group">
                 <label className="text-muted">Name</label>
-                <input name="name" type="text" value={profile.name} onChange={handleChange} type="text" className="form-control"/>
+                <input name="name" value={profile.name} onChange={handleChange} type="text" className="form-control"/>
                 <label  className="text-muted">Email</label>
-                <input name="email" type="email" value={profile.email} onChange={handleChange} type="email" className="form-control"/>
+                <input name="email"  value={profile.email} onChange={handleChange} type="email" className="form-control"/>
                 <label className="text-muted">password</label>
-                <input name="password" type="password" value={profile.password} onChange={handleChange} type="password" className="form-control"/>
+                <input name="password"  value={profile.password} onChange={handleChange} type="password" className="form-control"/>
             </div>
             <button onClick={clickSubmit} type="submit" className="btn btn-raised btn-primary">submit</button>
         </form>

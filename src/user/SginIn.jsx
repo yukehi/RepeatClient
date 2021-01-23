@@ -14,20 +14,10 @@ const SginIn =() => {
         const {value,name } = event.target;
         //debug thers is an bug wehn trying to clear the error the prevValue disapeer
         setProfile(prevValue =>{
-            if(name === 'email'){
-                return {
-                    email:value,
-                    password:prevValue.password,
-                    error:''
-                }
-            }else if(name === 'password'){
-                return {
-                    email:prevValue.email,
-                    password:value,
-                    error:''
-
-                }
-        }
+            return {
+                ...prevValue,
+                [name]: value
+            }
     })
 }
 
@@ -87,9 +77,9 @@ const SginIn =() => {
         <form>
             <div className="from-group">
                 <label  className="text-muted">Email</label>
-                <input name="email" type="email" value={profile.email} onChange={handleChange} type="email" className="form-control"/>
+                <input name="email"  value={profile.email} onChange={handleChange} type="email" className="form-control"/>
                 <label className="text-muted">password</label>
-                <input name="password" type="password" value={profile.password} onChange={handleChange} type="password" className="form-control"/>
+                <input name="password"  value={profile.password} onChange={handleChange} type="password" className="form-control"/>
             </div>
             <button onClick={clickSubmit} type="submit" className="btn btn-raised btn-primary">submit</button>
         </form>

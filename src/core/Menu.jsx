@@ -3,6 +3,8 @@ import { Link , withRouter} from 'react-router-dom';
 import { isAuthenticated } from '../auth/index'
 import Hover from '../core/OnHover'
 import HomeIcon from '@material-ui/icons/Home';
+import PeopleIcon from '@material-ui/icons/People';
+import RepeatIcon from '@material-ui/icons/Repeat';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import {signout} from '../auth'
 
@@ -31,11 +33,19 @@ const Menu = ({history})=>{
         )}
     {isAuthenticated() && (<div className='nav nav-tabs'>
     <li className="nav-item">
+    <Link style = {isActive(history,`/post/new/${isAuthenticated().user._id}`)}className="nav-link" to={`/post/new/${isAuthenticated().user._id}`}><RepeatIcon/></Link>
+    </li>
+    <li className="nav-item">
+        <Link style={isActive(history,'/users')} className="nav-link" to='/users'><PeopleIcon/></Link>
+    </li>
+    <li className="nav-item">
     <Link style = {isActive(history,`/user/${isAuthenticated().user._id}`)}className="nav-link" to={`/user/${isAuthenticated().user._id}`}><AccountCircleIcon/></Link>
     </li>
         <li className="nav-item">
         <Link to='/' onClick={() =>signout(()=> history.push('/'))} style={isActive(history,'/signup'),{cursor:'pointer'},{backgroundColor:'#7debfa'}} className="nav-link" ><Hover/></Link>
     </li>
+    
+    
     
     </div>
     )}    

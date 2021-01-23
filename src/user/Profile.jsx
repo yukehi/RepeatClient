@@ -1,47 +1,62 @@
 import React , { useState,useEffect }from 'react';
+import { Redirect ,Link } from 'react-router-dom';
 import { isAuthenticated } from '../auth/index'
+import DefaultProfile from '../images/avater.png';
+import DeleteUser from './DeleteUser'
+import { read } from './UserApi';
+
 
 const Profile = (props) => {
+
     const [user,setUser] = useState({
         user:{
             name:'',
             email:'',
             emotion:'',
             color:'',
+            id:'',
         },
-        redirectToSignIn: false
     })
+
     useEffect(() => {
         const userId = props.match.params.userId
-        fetch(`${process.env.REACT_APP_API_URL}/user/${userId}`,{
-            method:'GET',
-            headers: {
-                'Accept':'application/json',
-                'Content-Type':'application/json',
-                'Authorization':`Bearer ${isAuthenticated().token}`
-            }
-        })
-        .then(response =>{
-            return response.json()
-        })
+        const token = isAuthenticated().token
+        read(userId,token)
         .then(data =>{
-            if(data.error){
-               setUser({redirectToSignIn:true})
-            }else{
-                setUser({user:
-                    {name:data.name, email:data.email,emotion:data.emotion,color:data.color}})
+            if(!data.error){
+               setUser({user:
+                {name:data.name, email:data.email,emotion:data.emotion,color:data.color,id:data._id}})
+            }if(data.error){
+                console.log(data.error);
             }
         })
-    })
-//    const componentDidMount = ()();
-    
-    // useEffect(() =>console.log('user id form route params:', props.match.params.userId),[])
+    }, [])// importent to set the [] if ther is no contuinme fucntion 
 
-    return(
+    if(!isAuthenticated()) {
+        return <Redirect to='/signin'/>
+        }
+     
+
+    return (
+        
         <div className='container'>
-            <h2 className="mt-5 mb-5">Profile</h2>
-            <p>Hello {user.user.name}</p>
-            <p>Email : {user.user.email}</p>
+            <div className='row'>
+                <div className='col-md-6 '>
+                    <img className="card-img-top" style={{width:'100%',height:'15vw',objectFit:'cover'}} src={DefaultProfile} alt="Card image cap"/>
+                </div>
+
+                <div className='col-md-6'>
+                <h2 className="mt-5 mb-5">Hello {user.user.name}</h2>
+                    <p>Email : {user.user.email}</p>
+                    {isAuthenticated().user && isAuthenticated().user._id === user.user.id && (
+                        <div className='d-inLine-block mt-5'>
+                        {/* debug th edit page ther is a prblom with pic upload */}
+                            <Link className = 'btn btn-raised btn-success mr-5' to={`/user/edit/${user.user.id}`}>Edit Profile</Link>
+                            <DeleteUser userId = {isAuthenticated().user._id}/>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     )
 }
